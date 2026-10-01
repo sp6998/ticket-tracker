@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ticket-tracker
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PUBLIC_BASE_URL
+        value: ""
+      - key: DATABASE_URL
+        value: sqlite:////opt/render/project/src/instance/tickets.db
