@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Custom Fields{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Custom Fields</h1>
+    <p>Add your own fields. They show up on the ticket form, the customer page and in every export.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Add field</h2>
+  <form method="post" class="grid-2" style="align-items:end">
+    <div><label>Field name *</label><input type="text" name="name" required placeholder="e.g. Product Area, SLA Due Date"></div>
+    <div>
+      <label>Field type</label>
+      <select name="field_type">
+        <option value="text">Text</option>
+        <option value="textarea">Long text</option>
+        <option value="number">Number</option>
+        <option value="date">Date</option>
+      </select>
+    </div>
+    <div style="margin-top:14px"><button class="btn" type="submit">＋ Add field</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Existing fields ({{ fields|length }})</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Type</th><th style="text-align:right">Actions</th></tr></thead>
+      <tbody>
+      {% for f in fields %}
+        <tr>
+          <td><strong>{{ f.name }}</strong></td>
+          <td><span class="badge p-low">{{ {'text':'Text','textarea':'Long text','number':'Number','date':'Date'}.get(f.field_type, f.field_type) }}</span></td>
+          <td style="text-align:right">
+            <form class="inline" method="post" action="{{ url_for('delete_field', field_id=f.id) }}" onsubmit="return confirm('Remove “{{ f.name }}”? Existing values will be hidden.');">
+              <button class="icon-btn" title="Delete" type="submit">🗑️</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="3"><div class="empty"><div class="big">🧩</div>No custom fields yet.</div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

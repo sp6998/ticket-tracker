@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import export_menu %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Customers</h1>
+    <p>Manage customers, share tracking links and export their tickets.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Add customer</h2>
+  <form method="post" class="grid-2" style="align-items:end">
+    <div><label>Name *</label><input type="text" name="name" required placeholder="Acme Corp"></div>
+    <div><label>Email</label><input type="email" name="email" placeholder="support@acme.com"></div>
+    <div style="margin-top:14px"><button class="btn" type="submit">＋ Add customer</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>All customers ({{ customers|length }})</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Tickets</th><th>Customer tracking link</th><th style="text-align:right">Actions</th></tr></thead>
+      <tbody>
+      {% for c in customers %}
+        <tr>
+          <td><strong>{{ c.name }}</strong></td>
+          <td class="muted">{{ c.email or '—' }}</td>
+          <td><a href="{{ url_for('index', customer_id=c.id) }}">{{ c.tickets|length }} ticket{{ 's' if c.tickets|length != 1 }}</a></td>
+          <td>
+            <div class="copy-row">
+              <input id="link-{{ c.id }}" readonly value="{{ public_track_url(c.tracking_token) }}">
+              <button class="btn ghost sm" type="button" onclick="copyText('link-{{ c.id }}', this)">Copy</button>
+              <a class="btn ghost sm" target="_blank" href="{{ url_for('track', token=c.tracking_token) }}">Open</a>
+            </div>
+          </td>
+          <td style="text-align:right;white-space:nowrap">
+            {{ export_menu(c.id, '⬇ Export', 'btn ghost sm') }}
+            <form class="inline" method="post" action="{{ url_for('regenerate_token', customer_id=c.id) }}" onsubmit="return confirm('Generate a new link? The current link will stop working.');">
+              <button class="icon-btn" title="Regenerate link" type="submit">🔄</button>
+            </form>
+            <form class="inline" method="post" action="{{ url_for('delete_customer', customer_id=c.id) }}" onsubmit="return confirm('Delete {{ c.name }} and all their tickets?');">
+              <button class="icon-btn" title="Delete" type="submit">🗑️</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="5"><div class="empty"><div class="big">👥</div>No customers yet. Add one above.</div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

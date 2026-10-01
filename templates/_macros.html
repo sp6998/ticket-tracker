@@ -1,0 +1,20 @@
+{% macro status_badge(s) -%}
+  {%- set s = s or 'Open' -%}
+  <span class="badge s-{{ s|lower|replace(' ', '-') }}">{{ s }}</span>
+{%- endmacro %}
+
+{% macro priority_badge(p) -%}
+  {%- set p = p or 'Medium' -%}
+  <span class="badge p-{{ p|lower }}">{{ p }}</span>
+{%- endmacro %}
+
+{% macro export_menu(customer_id, label='⬇ Export', cls='btn ghost') -%}
+<div class="dropdown">
+  <button type="button" class="{{ cls }}" data-dropdown>{{ label }} ▾</button>
+  <div class="dropdown-menu">
+    <a href="{{ url_for('export_customer_tickets', customer_id=customer_id, fmt='csv') }}">📄 CSV (.csv)</a>
+    <a href="{{ url_for('export_customer_tickets', customer_id=customer_id, fmt='xlsx') }}">📊 Excel (.xlsx)</a>
+    <a href="{{ url_for('export_customer_tickets', customer_id=customer_id, fmt='pdf') }}">📕 PDF (.pdf)</a>
+  </div>
+</div>
+{%- endmacro %}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Ticket Tracker{% endblock %} · Ticket Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="logo">🎫</span> Ticket Tracker</div>
+    <nav class="nav">
+      <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint in ('index','new_ticket','edit_ticket') }}">📋 Tickets</a>
+      <a href="{{ url_for('customers') }}" class="{{ 'active' if request.endpoint == 'customers' }}">👥 Customers</a>
+      <a href="{{ url_for('fields') }}" class="{{ 'active' if request.endpoint == 'fields' }}">🧩 Custom Fields</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <button class="btn ghost menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Menu</button>
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<div class="toasts">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="toast {{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
+<script>
+  // Auto-hide toasts
+  setTimeout(() => document.querySelectorAll('.toast').forEach(t => t.remove()), 4000);
+  // Dropdowns
+  document.addEventListener('click', e => {
+    const toggle = e.target.closest('[data-dropdown]');
+    document.querySelectorAll('.dropdown.open').forEach(d => { if (!toggle || d !== toggle.parentElement) d.classList.remove('open'); });
+    if (toggle) toggle.parentElement.classList.toggle('open');
+  });
+  // Copy to clipboard
+  function copyText(id, btn) {
+    const el = document.getElementById(id);
+    navigator.clipboard.writeText(el.value).then(() => {
+      const old = btn.textContent; btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = old, 1500);
+    });
+  }
+</script>
+</body>
+</html>
